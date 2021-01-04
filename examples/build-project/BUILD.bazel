@@ -1,0 +1,9 @@
+load("@rules_elm//elm:def.bzl", "elm_make")
+
+elm_make(
+    name = "index",
+    srcs = glob(["**"]),
+    elm_json = "elm.json",
+    main = "src/Main.elm",
+    output = "index.html",
+)

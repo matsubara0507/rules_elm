@@ -2,3 +2,12 @@ toolchain_type(
     name = "toolchain",
     visibility = ["//visibility:public"],
 )
+
+exports_files(["private/elm_wrapper.py.tpl"], visibility = ["//visibility:public"])
+
+load("@rules_elm//elm:elm_wrapper.bzl", "elm_wrapper")
+
+elm_wrapper(
+    name = "elm_wrapper",
+    visibility = ["//visibility:public"],
+)

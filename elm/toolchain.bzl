@@ -89,7 +89,7 @@ _elm_compiler_toolchain = repository_rule(
     },
 )
 
-def rules_elm_toolchains(version = DEFAULT_VERSION):
+def toolchains(version = DEFAULT_VERSION):
     if not ELM_COMPILER_BINDIST.get(version):
         fail("Binary distribution of Elm {} is not available.".format(version))
     for os, checksum in ELM_COMPILER_BINDIST.get(version).items():
