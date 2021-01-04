@@ -19,10 +19,10 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: run bazel example: display elm version
+    - name: run bazel example (display elm version)
       run: |
         bazel build //examples/display-version:elm
         cat bazel-bin/examples/display-version/elm.version
 
-    - name: run bazel example: build project
+    - name: run bazel example (build project)
       run: bael build //examples/build-project:index
