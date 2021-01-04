@@ -1,0 +1,24 @@
+name: Example
+on:
+  pull_request: null
+  push:
+    branches:
+    - main
+jobs:
+  run:
+    name: Run Example
+    runs-on: ${{ matrix.operating-system }}
+    strategy:
+      matrix:
+        operating-system:
+          - ubuntu-18.04
+          - macos-10.15
+          - windows-2019
+      fail-fast: false
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: run bazel example
+      run: |
+        bazel run //examples/display-version:elm
+        cat bazel-bin/examples/display-version/elm.version

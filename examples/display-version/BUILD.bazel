@@ -1,0 +1,3 @@
+load(":version.bzl", "display_elm_version")
+
+display_elm_version(name = "elm")

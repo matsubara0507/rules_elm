@@ -2,3 +2,9 @@
 elm-stuff
 # elm-repl generated files
 repl-temp-*
+
+# bazel
+bazel-bin
+bazel-out
+bazel-rules_elm
+bazel-testlogs
