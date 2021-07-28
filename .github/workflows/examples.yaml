@@ -25,4 +25,6 @@ jobs:
         cat bazel-bin/examples/display-version/elm.version
 
     - name: run bazel example (build project)
-      run: bazel build //examples/build-project:index
+      run: |
+        bazel build //examples/build-project:index-without-deps
+        bazel build //examples/build-project:index
