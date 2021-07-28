@@ -3,9 +3,9 @@ load("@rules_python//python:defs.bzl", "py_binary")
 def _elm_wrapper_impl(ctx):
     elm_compiler = ctx.toolchains["@rules_elm//elm:toolchain"].elm
 
-    elm_wrapper = ctx.actions.declare_file("elm_wrapper.py")
+    elm_wrapper = ctx.actions.declare_file(ctx.attr.src_name + ".py")
     ctx.actions.expand_template(
-        template = ctx.file._elm_wrapper_tpl,
+        template = ctx.file.elm_wrapper_tpl,
         output = elm_wrapper,
         is_executable = True,
         substitutions = {
@@ -17,9 +17,9 @@ def _elm_wrapper_impl(ctx):
 _elm_wrapper = rule(
     _elm_wrapper_impl,
     attrs = {
-        "_elm_wrapper_tpl": attr.label(
+        "src_name": attr.string(),
+        "elm_wrapper_tpl": attr.label(
             allow_single_file = True,
-            default = Label("@rules_elm//elm:private/elm_wrapper.py.tpl"),
         ),
     },
     toolchains = [
@@ -27,8 +27,8 @@ _elm_wrapper = rule(
     ]
 )
 
-def elm_wrapper(name, **kwargs):
-    _elm_wrapper(name = name + ".py")
+def elm_wrapper(name, tmpl = Label("@rules_elm//elm:private/elm_wrapper.py.tpl"), **kwargs):
+    _elm_wrapper(name = name + ".py", src_name = name, elm_wrapper_tpl = tmpl)
     py_binary(
         name = name,
         srcs = [name + ".py"],
