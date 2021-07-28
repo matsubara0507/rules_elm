@@ -21,10 +21,10 @@ jobs:
 
     - name: run bazel example (display elm version)
       run: |
-        bazel build //examples/display-version:elm
+        bazelisk build //examples/display-version:elm
         cat bazel-bin/examples/display-version/elm.version
 
     - name: run bazel example (build project)
       run: |
-        bazel build //examples/build-project:index-without-deps
-        bazel build //examples/build-project:index
+        bazelisk build //examples/build-project:index-without-deps
+        bazelisk build //examples/build-project:index
