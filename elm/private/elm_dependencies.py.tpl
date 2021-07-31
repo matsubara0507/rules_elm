@@ -26,9 +26,7 @@ def run(cmd, *args, **kwargs):
 
 elm_runtime_path = os.path.abspath("@@ELM_RUNTIME@@")
 elm_project_root = sys.argv.pop(1)
-bazel_home = os.getcwd()
-elm_home = os.getenv("ELM_HOME")
-os.environ["ELM_HOME"] = bazel_home + "/" + elm_home
+os.environ["ELM_HOME"] = os.path.abspath(os.getenv("ELM_HOME"))
 
 os.chdir(elm_project_root)
 
@@ -46,5 +44,5 @@ if debug:
 
 run([elm_runtime_path, "make", "Main.elm"])
 
-os.chdir(bazel_home)
+elm_home = os.getenv("ELM_HOME")
 shutil.make_archive(elm_home, "zip", root_dir = elm_home)

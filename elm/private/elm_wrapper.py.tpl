@@ -4,7 +4,6 @@
 #   Exec elm command with ARGS_FOR_ELM after `cd ELM_PROJECT_ROOT`
 #   NOTE: If have `--output PATH` arguments, change PATH to absolute path
 
-import json
 import os
 import os.path
 import subprocess
