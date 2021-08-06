@@ -11,3 +11,9 @@ elm_wrapper(
     name = "elm_wrapper",
     visibility = ["//visibility:public"],
 )
+
+elm_wrapper(
+    name = "elm_dependencies",
+    tmpl = "@rules_elm//elm:private/elm_dependencies.py.tpl",
+    visibility = ["//visibility:public"],
+)

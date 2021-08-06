@@ -1,7 +1,21 @@
-load("@rules_elm//elm:def.bzl", "elm_make")
+load("@rules_elm//elm:def.bzl", "elm_make", "elm_dependencies")
+
+elm_dependencies(
+    name = "deps",
+    elm_json = "elm.json",
+)
 
 elm_make(
     name = "index",
+    srcs = glob(["**"]),
+    elm_json = "elm.json",
+    main = "src/Main.elm",
+    output = "index.html",
+    elm_home = ":deps",
+)
+
+elm_make(
+    name = "index-without-deps",
     srcs = glob(["**"]),
     elm_json = "elm.json",
     main = "src/Main.elm",
