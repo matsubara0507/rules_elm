@@ -23,6 +23,7 @@ elm_make(
     elm_json = "elm.json",
     main = "src/Main.elm",
     output = "index.html",
+    optimize = True,
     elm_home = ":deps",
 )
 ```
