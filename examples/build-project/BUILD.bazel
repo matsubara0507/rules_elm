@@ -15,6 +15,16 @@ elm_make(
 )
 
 elm_make(
+    name = "index-optimize",
+    srcs = glob(["**"]),
+    elm_json = "elm.json",
+    main = "src/Main.elm",
+    output = "index.html",
+    optimize = True,
+    elm_home = ":deps",
+)
+
+elm_make(
     name = "index-without-deps",
     srcs = glob(["**"]),
     elm_json = "elm.json",
