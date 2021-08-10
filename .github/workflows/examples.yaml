@@ -28,3 +28,4 @@ jobs:
       run: |
         bazelisk build //examples/build-project:index-without-deps
         bazelisk build //examples/build-project:index
+        bazelisk build //examples/build-project:index-optimize

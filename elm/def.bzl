@@ -8,12 +8,17 @@ def _elm_make_impl(ctx):
         env["ELM_HOME_ZIP"] = ctx.file.elm_home.path
         inputs.append(ctx.file.elm_home)
 
+    arguments = [
+        ctx.file.elm_json.dirname,
+        "make", ctx.attr.main,
+        "--output", output_file.path,
+    ]
+    if ctx.attr.optimize:
+        arguments.append("--optimize")
+
     ctx.actions.run(
         executable = ctx.executable._elm_wrapper,
-        arguments = [
-            ctx.file.elm_json.dirname,
-            "make", ctx.attr.main, "--output", output_file.path,
-        ],
+        arguments = arguments,
         inputs = inputs,
         outputs = [output_file],
         env = env,
@@ -34,6 +39,7 @@ elm_make = rule(
         "output": attr.string(
             default = "index.html",
         ),
+        "optimize": attr.bool(),
         "elm_home": attr.label(
             allow_single_file = True,
         ),
