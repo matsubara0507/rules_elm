@@ -70,13 +70,11 @@ toolchain(
     toolchain_type = "@rules_elm//elm:toolchain",
     toolchain = "@{bindist_name}//:{os}_info",
     exec_compatible_with = {exec_constraints},
-    target_compatible_with = {target_constraints},
 )
         """.format(
             os = ctx.attr.os,
             bindist_name = ctx.attr.bindist_name,
             exec_constraints = exec_constraints,
-            target_constraints = exec_constraints,
         ),
     )
 
