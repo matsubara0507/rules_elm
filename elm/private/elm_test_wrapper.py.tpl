@@ -13,7 +13,7 @@ def run(cmd, *args, **kwargs):
         print("+ " + " ".join(["'{}'".format(arg) for arg in cmd]), file=sys.stderr)
         sys.stderr.flush()
     try:
-        subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, *args, **kwargs)
+        subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, *args, **kwargs)
     except subprocess.CalledProcessError as err:
         sys.stdout.buffer.write(err.stdout)
         sys.stderr.buffer.write(err.stderr)
@@ -34,8 +34,8 @@ else:
         elm_zip.extractall(elm_home)
     os.environ["ELM_HOME"] = elm_home
 
-args = []
+args = ["--compiler", elm_runtime_path, "--project", project_root]
 if "@@VERBOSE@@" != "":
     args.append("-vvv")
 
-run([elm_test_path, "--compiler", elm_runtime_path, "--project", project_root] + args)
+run("{cmd} {args}".format(cmd = elm_test_path, args = " ".join(args)))
