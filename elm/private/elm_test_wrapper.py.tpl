@@ -21,16 +21,21 @@ def run(cmd, *args, **kwargs):
 
 elm_runtime_path = os.path.abspath("@@ELM_RUNTIME@@")
 elm_test_path = os.path.abspath("@@ELM_TEST@@")
+project_root = os.path.abspath("@@PROJECT_ROOT@@")
 
-if os.getenv("ELM_HOME_ZIP") == None:
+if "@@ELM_HOME_ZIP@@" == "":
     # To don't occur error from elm compiler:
     #   HOME: getAppUserDataDirectory:getEnv: does not exist (no environment variable)
     os.putenv("HOME", os.getcwd())
 else:
     elm_home = os.getcwd() + "/.elm"
-    elm_home_zip = os.getenv("ELM_HOME_ZIP")
+    elm_home_zip = os.path.abspath("@@ELM_HOME_ZIP@@")
     with zipfile.ZipFile(elm_home_zip) as elm_zip:
         elm_zip.extractall(elm_home)
     os.environ["ELM_HOME"] = elm_home
 
-run([elm_test_path, "--compiler", elm_runtime_path] + sys.argv[1:])
+args = []
+if "@@VERBOSE@@" != "":
+    args.append("-vvv")
+
+run([elm_test_path, "--compiler", elm_runtime_path, "--project", project_root] + args)

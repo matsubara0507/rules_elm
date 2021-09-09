@@ -29,7 +29,7 @@ _elm_wrapper = rule(
     ]
 )
 
-def elm_wrapper(name, tmpl = Label("@rules_elm//elm:private/elm_wrapper.py.tpl"), **kwargs):
+def elm_wrapper(name, tmpl, **kwargs):
     _elm_wrapper(name = name + ".py", src_name = name, elm_wrapper_tpl = tmpl, **kwargs)
     py_binary(
         name = name,

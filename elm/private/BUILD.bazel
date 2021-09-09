@@ -12,8 +12,4 @@ elm_wrapper(
     visibility = ["//visibility:public"],
 )
 
-elm_wrapper(
-    name = "elm_test_wrapper",
-    tmpl = ":elm_test_wrapper.py.tpl",
-    visibility = ["//visibility:public"],
-)
+exports_files(["elm_test_wrapper.py.tpl"], visibility = ["//visibility:public"])

@@ -1,3 +1,7 @@
+load("//elm/private:test.bzl", _elm_test = "elm_test")
+
+elm_test = _elm_test
+
 def _elm_make_impl(ctx):
     elm_compiler = ctx.toolchains["@rules_elm//elm:toolchain"].elm
     output_file = ctx.actions.declare_file(ctx.attr.output)
@@ -120,27 +124,3 @@ def _elm_test_impl(ctx):
         runfiles = ctx.runfiles(files = inputs).merge(ctx.attr._elm_test_wrapper.data_runfiles),
     )]
 
-elm_test = rule(
-    _elm_test_impl,
-    test = True,
-    attrs = {
-        "tests": attr.label_list(allow_files = True),
-        "srcs": attr.label_list(allow_files = True),
-        "elm_json": attr.label(
-            mandatory = True,
-            allow_single_file = True,
-        ),
-        "elm_home": attr.label(
-            allow_single_file = True,
-        ),
-        "vvv": attr.bool(),
-        "_elm_test_wrapper": attr.label(
-            executable = True,
-            cfg = "host",
-            default = Label("@rules_elm//elm/private:elm_test_wrapper"),
-        ),
-    },
-    toolchains = [
-        "@rules_elm//elm:toolchain",
-    ],
-)
