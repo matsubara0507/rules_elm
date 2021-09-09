@@ -1,4 +1,4 @@
-load("@rules_elm//elm:def.bzl", "elm_make", "elm_dependencies")
+load("@rules_elm//elm:def.bzl", "elm_make", "elm_dependencies", "elm_test")
 
 elm_dependencies(
     name = "deps",
@@ -30,4 +30,12 @@ elm_make(
     elm_json = "elm.json",
     main = "src/Main.elm",
     output = "index.html",
+)
+
+elm_test(
+    name = "sample-test",
+    tests = glob(["tests/**"]),
+    srcs = glob(["src/**"]),
+    elm_json = "elm.json",
+    elm_home = ":deps",
 )

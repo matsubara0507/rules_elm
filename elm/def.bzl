@@ -85,3 +85,62 @@ elm_dependencies = rule(
         "@rules_elm//elm:toolchain",
     ]
 )
+
+def _elm_test_impl(ctx):
+    elm_compiler = ctx.toolchains["@rules_elm//elm:toolchain"].elm
+    elm_test_bin = ctx.toolchains["@rules_elm//elm:toolchain"].elm_test
+    project_root = ctx.file.elm_json.short_path.rsplit("/", 1)[0]
+
+    inputs = [elm_compiler, elm_test_bin, ctx.file.elm_json, ctx.file.elm_home] + ctx.files.srcs + ctx.files.tests
+
+    arguments = [
+        "--project", project_root,
+    ]
+    if ctx.attr.vvv:
+        arguments.append("-vvv")
+
+    env = ""
+    if ctx.file.elm_home != None:
+        env = "ELM_HOME_ZIP={} ".format(ctx.file.elm_home.short_path)
+
+    runner_filename = ctx.attr.name + ".sh"
+    runner_file = ctx.actions.declare_file(runner_filename)
+    ctx.actions.write(
+        output = runner_file,
+        content = "#!/bin/sh\n{env}{cmd} {args}".format(
+            env = env, 
+            cmd = ctx.executable._elm_test_wrapper.short_path, 
+            args = " ".join(arguments),
+        ),
+        is_executable = True,
+    )
+
+    return [DefaultInfo(
+        executable = runner_file,
+        runfiles = ctx.runfiles(files = inputs).merge(ctx.attr._elm_test_wrapper.data_runfiles),
+    )]
+
+elm_test = rule(
+    _elm_test_impl,
+    test = True,
+    attrs = {
+        "tests": attr.label_list(allow_files = True),
+        "srcs": attr.label_list(allow_files = True),
+        "elm_json": attr.label(
+            mandatory = True,
+            allow_single_file = True,
+        ),
+        "elm_home": attr.label(
+            allow_single_file = True,
+        ),
+        "vvv": attr.bool(),
+        "_elm_test_wrapper": attr.label(
+            executable = True,
+            cfg = "host",
+            default = Label("@rules_elm//elm:elm_test_wrapper"),
+        ),
+    },
+    toolchains = [
+        "@rules_elm//elm:toolchain",
+    ],
+)
