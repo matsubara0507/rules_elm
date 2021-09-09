@@ -53,7 +53,11 @@ _elm_test_wrapper = rule(
 def _elm_test_impl(ctx):
     # Because returned executables must be created from the same rule, the
     # launcher target is simply symlinked and exposed.
-    launcher = ctx.actions.declare_file(ctx.label.name + ".launcher")
+    launcher_name = ctx.label.name + "-launcher"
+    if ctx.attr.is_windows:
+        launcher_name += ".exe"
+
+    launcher = ctx.actions.declare_file(launcher_name)
     ctx.actions.symlink(
         output = launcher,
         target_file = ctx.executable.launcher,
@@ -88,6 +92,7 @@ _elm_test = rule(
             executable = True,
             cfg = "host",
         ),
+        "is_windows": attr.bool(),
     },
     toolchains = [
         "@rules_elm//elm:toolchain",
@@ -110,4 +115,12 @@ def elm_test(name, **kwargs):
             "@bazel_tools//tools/python/runfiles",
         ],
     )
-    _elm_test(name = name, launcher = name + "-launcher", **kwargs)
+    _elm_test(
+        name = name,
+        launcher = name + "-launcher",
+        is_windows = select({
+            "@bazel_tools//src/conditions:host_windows": True,
+            "//conditions:default": False,
+        }),
+        **kwargs,
+    )
