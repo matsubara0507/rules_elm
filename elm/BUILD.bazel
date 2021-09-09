@@ -2,24 +2,3 @@ toolchain_type(
     name = "toolchain",
     visibility = ["//visibility:public"],
 )
-
-exports_files(["private/elm_wrapper.py.tpl"], visibility = ["//visibility:public"])
-
-load("@rules_elm//elm:elm_wrapper.bzl", "elm_wrapper")
-
-elm_wrapper(
-    name = "elm_wrapper",
-    visibility = ["//visibility:public"],
-)
-
-elm_wrapper(
-    name = "elm_dependencies",
-    tmpl = "@rules_elm//elm:private/elm_dependencies.py.tpl",
-    visibility = ["//visibility:public"],
-)
-
-elm_wrapper(
-    name = "elm_test_wrapper",
-    tmpl = "@rules_elm//elm:private/elm_test_wrapper.py.tpl",
-    visibility = ["//visibility:public"],
-)

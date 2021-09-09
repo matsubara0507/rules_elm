@@ -46,7 +46,7 @@ elm_make = rule(
         "_elm_wrapper": attr.label(
             executable = True,
             cfg = "host",
-            default = Label("@rules_elm//elm:elm_wrapper"),
+            default = Label("@rules_elm//elm/private:elm_wrapper"),
         ),
     },
     toolchains = [
@@ -78,7 +78,7 @@ elm_dependencies = rule(
         "_elm_wrapper": attr.label(
             executable = True,
             cfg = "host",
-            default = Label("@rules_elm//elm:elm_dependencies"),
+            default = Label("@rules_elm//elm/private:elm_dependencies"),
         ),
     },
     toolchains = [
@@ -137,7 +137,7 @@ elm_test = rule(
         "_elm_test_wrapper": attr.label(
             executable = True,
             cfg = "host",
-            default = Label("@rules_elm//elm:elm_test_wrapper"),
+            default = Label("@rules_elm//elm/private:elm_test_wrapper"),
         ),
     },
     toolchains = [
