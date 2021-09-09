@@ -46,6 +46,7 @@ def _elm_compiler_impl(ctx):
     if not ELM_TEST_BINDIST.get(test_version):
         fail("Binary distribution of elm-test-rs {} is not available.".format(test_version))
 
+    elm_test_name = "elm-test-rs"
     test_checksum = ELM_TEST_BINDIST.get(test_version).get(os)
     test_file_name = "elm-test-{}".format(os)
     test_suffix = os
@@ -54,6 +55,7 @@ def _elm_compiler_impl(ctx):
     test_extention = "tar.gz"
     if os == "windows":
         test_extention = "zip"
+        elm_test_name = "elm-test-rs.exe"
     ctx.download_and_extract(
         url = "https://github.com/mpizenberg/elm-test-rs/releases/download/v{}/elm-test-rs_{}.{}".format(test_version, test_suffix, test_extention),
         sha256 = test_checksum,
@@ -64,9 +66,9 @@ def _elm_compiler_impl(ctx):
         executable = False,
         content = """
 load("@rules_elm//elm:toolchain.bzl", "elm_toolchain")
-exports_files(["elm-{os}", "elm-test-rs"])
-elm_toolchain(name = "{os}_info", elm = ":elm-{os}", elm_test = ":elm-test-rs")
-        """.format(os = os),
+exports_files(["elm-{os}", "{test_name}"])
+elm_toolchain(name = "{os}_info", elm = ":elm-{os}", elm_test = ":{test_name}")
+        """.format(os = os, test_name = elm_test_name),
     )
 
 
