@@ -33,7 +33,9 @@ ELM_TEST_BINDIST = \
 def _elm_compiler_impl(ctx):
     os = ctx.attr.os
     version = ctx.attr.version
-    file_name = "elm-{}".format(os)
+    file_name = "elm"
+    if os == "windows":
+        file_name += ".exe"
     ctx.download(
         url = "https://github.com/elm/compiler/releases/download/{}/binary-for-{}-64-bit.gz".format(version, os),
         sha256 = ctx.attr.checksum,
@@ -66,9 +68,9 @@ def _elm_compiler_impl(ctx):
         executable = False,
         content = """
 load("@rules_elm//elm:toolchain.bzl", "elm_toolchain")
-exports_files(["elm-{os}", "{test_name}"])
-elm_toolchain(name = "{os}_info", elm = ":elm-{os}", elm_test = ":{test_name}")
-        """.format(os = os, test_name = elm_test_name),
+exports_files(["{elm}", "{elm_test}"])
+elm_toolchain(name = "{os}_info", elm = ":{elm}", elm_test = ":{elm_test}")
+        """.format(os = os, elm = file_name, elm_test = elm_test_name),
     )
 
 
