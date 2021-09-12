@@ -1,0 +1,15 @@
+load("@rules_elm//elm/private:elm_wrapper.bzl", "elm_wrapper")
+
+elm_wrapper(
+    name = "elm_wrapper",
+    tmpl = ":elm_wrapper.py.tpl",
+    visibility = ["//visibility:public"],
+)
+
+elm_wrapper(
+    name = "elm_dependencies",
+    tmpl = ":elm_dependencies.py.tpl",
+    visibility = ["//visibility:public"],
+)
+
+exports_files(["elm_test_wrapper.py.tpl"], visibility = ["//visibility:public"])

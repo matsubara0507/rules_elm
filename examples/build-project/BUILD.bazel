@@ -1,4 +1,4 @@
-load("@rules_elm//elm:def.bzl", "elm_make", "elm_dependencies")
+load("@rules_elm//elm:def.bzl", "elm_make", "elm_dependencies", "elm_test")
 
 elm_dependencies(
     name = "deps",
@@ -19,7 +19,7 @@ elm_make(
     srcs = glob(["**"]),
     elm_json = "elm.json",
     main = "src/Main.elm",
-    output = "index.html",
+    output = "optimized-index.html",
     optimize = True,
     elm_home = ":deps",
 )
@@ -29,5 +29,13 @@ elm_make(
     srcs = glob(["**"]),
     elm_json = "elm.json",
     main = "src/Main.elm",
-    output = "index.html",
+    output = "index-without-deps.html",
+)
+
+elm_test(
+    name = "sample-test",
+    tests = glob(["tests/**"]),
+    srcs = glob(["src/**"]),
+    elm_json = "elm.json",
+    elm_home = ":deps",
 )

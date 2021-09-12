@@ -1,3 +1,7 @@
+load("//elm/private:test.bzl", _elm_test = "elm_test")
+
+elm_test = _elm_test
+
 def _elm_make_impl(ctx):
     elm_compiler = ctx.toolchains["@rules_elm//elm:toolchain"].elm
     output_file = ctx.actions.declare_file(ctx.attr.output)
@@ -46,7 +50,7 @@ elm_make = rule(
         "_elm_wrapper": attr.label(
             executable = True,
             cfg = "host",
-            default = Label("@rules_elm//elm:elm_wrapper"),
+            default = Label("@rules_elm//elm/private:elm_wrapper"),
         ),
     },
     toolchains = [
@@ -78,7 +82,7 @@ elm_dependencies = rule(
         "_elm_wrapper": attr.label(
             executable = True,
             cfg = "host",
-            default = Label("@rules_elm//elm:elm_dependencies"),
+            default = Label("@rules_elm//elm/private:elm_dependencies"),
         ),
     },
     toolchains = [

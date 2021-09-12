@@ -2,6 +2,11 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive", "http_file"
 
 DEFAULT_VERSION = "0.19.1"
 
+DEFAULT_TEST_VERSION = \
+    {
+        "0.19.1": "1.2.1",
+    }
+
 ELM_COMPILER_BINDIST = \
     {
         "0.19.1": {
@@ -16,17 +21,21 @@ ELM_COMPILER_BINDIST = \
         },
     }
 
-
-def _elm_compiler_build_file_context(os):
-    """
-exports_files(["elm"])
-elm_toolchain(name = {}_info, elm = ":elm")
-    """.format(os)
+ELM_TEST_BINDIST = \
+    {
+        "1.2.1": {
+            "linux": "6e5759f832a5e025898c9306ba47b2f9ed7f0c371dc69bd16c15c7ed8bfb1501",
+            "mac": "890c45a7eda24fd13169d349af9c835ee3ed04974eec36953baba5aefc3628a8",
+            "windows": "26add13880af484a47cd182547f41370d3bfca812a7cc9e3db6f41ce13b7fc40",
+        }
+    }
 
 def _elm_compiler_impl(ctx):
     os = ctx.attr.os
     version = ctx.attr.version
-    file_name = "elm-{}".format(os)
+    file_name = "elm"
+    if os == "windows":
+        file_name += ".exe"
     ctx.download(
         url = "https://github.com/elm/compiler/releases/download/{}/binary-for-{}-64-bit.gz".format(version, os),
         sha256 = ctx.attr.checksum,
@@ -34,14 +43,34 @@ def _elm_compiler_impl(ctx):
     )
     ctx.execute([ctx.which("gzip"), "-d", file_name + ".gz"])
     ctx.execute([ctx.which("chmod"), "+x", file_name])
+
+    test_version = ctx.attr.test_version
+    if not ELM_TEST_BINDIST.get(test_version):
+        fail("Binary distribution of elm-test-rs {} is not available.".format(test_version))
+
+    elm_test_name = "elm-test-rs"
+    test_checksum = ELM_TEST_BINDIST.get(test_version).get(os)
+    test_file_name = "elm-test-{}".format(os)
+    test_suffix = os
+    if os == "mac":
+        test_suffix = "macos"
+    test_extention = "tar.gz"
+    if os == "windows":
+        test_extention = "zip"
+        elm_test_name = "elm-test-rs.exe"
+    ctx.download_and_extract(
+        url = "https://github.com/mpizenberg/elm-test-rs/releases/download/v{}/elm-test-rs_{}.{}".format(test_version, test_suffix, test_extention),
+        sha256 = test_checksum,
+    )
+
     ctx.file(
         "BUILD",
         executable = False,
         content = """
 load("@rules_elm//elm:toolchain.bzl", "elm_toolchain")
-exports_files(["elm-{os}"])
-elm_toolchain(name = "{os}_info", elm = ":elm-{os}")
-        """.format(os = os),
+exports_files(["{elm}", "{elm_test}"])
+elm_toolchain(name = "{os}_info", elm = ":{elm}", elm_test = ":{elm_test}")
+        """.format(os = os, elm = file_name, elm_test = elm_test_name),
     )
 
 
@@ -51,6 +80,7 @@ _elm_compiler = repository_rule(
     attrs = {
         "os": attr.string(),
         "version": attr.string(),
+        "test_version": attr.string(),
         "checksum": attr.string(),
     },
 )
@@ -87,25 +117,34 @@ _elm_compiler_toolchain = repository_rule(
     },
 )
 
-def toolchains(version = DEFAULT_VERSION):
+def toolchains(version = DEFAULT_VERSION, test_version = ""):
     if not ELM_COMPILER_BINDIST.get(version):
         fail("Binary distribution of Elm {} is not available.".format(version))
+
+    if test_version == "":
+        test_version = DEFAULT_TEST_VERSION.get(version)
+
     for os, checksum in ELM_COMPILER_BINDIST.get(version).items():
         bindist_name = "rules_elm_compiler_{}".format(os)
         toolchain_name = bindist_name + "-toolchain"
-        _elm_compiler(name = bindist_name, os = os, version = version, checksum = checksum)
+        _elm_compiler(name = bindist_name, os = os, version = version, checksum = checksum, test_version = test_version)
         _elm_compiler_toolchain(name = toolchain_name, bindist_name = bindist_name, os = os)
         native.register_toolchains("@{}//:toolchain".format(toolchain_name))
 
 def _elm_toolchain_impl(ctx):
     return [platform_common.ToolchainInfo(
         elm = ctx.file.elm,
+        elm_test = ctx.file.elm_test,
     )]
 
 elm_toolchain = rule(
     _elm_toolchain_impl,
     attrs = {
         "elm": attr.label(
+            allow_single_file = True,
+            mandatory = True,
+        ),
+        "elm_test": attr.label(
             allow_single_file = True,
             mandatory = True,
         ),

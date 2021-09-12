@@ -29,3 +29,4 @@ jobs:
         bazelisk build //examples/build-project:index-without-deps
         bazelisk build //examples/build-project:index
         bazelisk build //examples/build-project:index-optimize
+        bazelisk test --test_output=all //examples/build-project:sample-test
