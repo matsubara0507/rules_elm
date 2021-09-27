@@ -22,7 +22,7 @@ def run(cmd, *args, **kwargs):
 elm_runtime_path = os.path.abspath("@@ELM_RUNTIME@@")
 elm_test_path = os.path.abspath("@@ELM_TEST@@")
 project_root = os.path.abspath("@@PROJECT_ROOT@@")
-test_filepaths = list(map(lambda path: os.path.abspath(path), "@@TEST_FILES@@".split(" ")))
+test_filepaths = "@@TEST_FILES@@".split(" ")
 
 if "@@ELM_HOME_ZIP@@" == "":
     # To don't occur error from elm compiler:
@@ -35,8 +35,8 @@ else:
         elm_zip.extractall(elm_home)
     os.environ["ELM_HOME"] = elm_home
 
-args = ["--compiler", elm_runtime_path, "--project", project_root] + test_filepaths
+args = ["--compiler", elm_runtime_path, "--project", project_root]
 if "@@VERBOSE@@" != "":
     args.append("-vvv")
 
-run("{cmd} {args}".format(cmd = elm_test_path, args = " ".join(args)))
+run("{cmd} {args}".format(cmd = elm_test_path, args = " ".join(args + test_filepaths)))
