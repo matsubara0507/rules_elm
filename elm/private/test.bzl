@@ -13,7 +13,7 @@ def _elm_test_wrapper_impl(ctx):
     substitutions = {
         "@@ELM_RUNTIME@@": elm_compiler.short_path,
         "@@ELM_TEST@@": elm_test_bin.short_path,
-        "@@PROJECT_ROOT@@": ctx.file.elm_json.short_path.rsplit("/", 1)[0],
+        "@@PROJECT_ROOT@@": "./{}".format(ctx.file.elm_json.short_path).rsplit("/", 1)[0],
         "@@ELM_HOME_ZIP@@": "",
         "@@VERBOSE@@": "",
     }
