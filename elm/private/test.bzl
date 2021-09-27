@@ -10,10 +10,15 @@ def _elm_test_wrapper_impl(ctx):
         ctx.file.elm_json,
     ] + ctx.files.srcs + ctx.files.tests
 
+    test_filepaths = []
+    for file in ctx.files.tests:
+        test_filepaths.append(file.short_path)
+
     substitutions = {
         "@@ELM_RUNTIME@@": elm_compiler.short_path,
         "@@ELM_TEST@@": elm_test_bin.short_path,
         "@@PROJECT_ROOT@@": "./{}".format(ctx.file.elm_json.short_path).rsplit("/", 1)[0],
+        "@@TEST_FILES@@": " ".join(test_filepaths),
         "@@ELM_HOME_ZIP@@": "",
         "@@VERBOSE@@": "",
     }
