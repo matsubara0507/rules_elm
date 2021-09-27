@@ -69,7 +69,4 @@ def elm_test(name, **kwargs):
         srcs = [name + ".py"],
         srcs_version = "PY3",
         python_version = "PY3",
-        deps = [
-            "@bazel_tools//tools/python/runfiles",
-        ],
     )
