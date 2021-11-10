@@ -41,6 +41,13 @@ def _elm_compiler_impl(ctx):
         sha256 = ctx.attr.checksum,
         output = file_name + ".gz",
     )
+
+    if ctx.which("gzip") == None:
+        fail("require gzip, but is not exist.")
+
+    if ctx.which("chmod") == None:
+        fail("require chmod, but is not exist.")
+
     ctx.execute([ctx.which("gzip"), "-d", file_name + ".gz"])
     ctx.execute([ctx.which("chmod"), "+x", file_name])
 
