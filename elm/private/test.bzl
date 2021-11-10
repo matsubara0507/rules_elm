@@ -23,6 +23,7 @@ def _elm_test_wrapper_impl(ctx):
         "@@TEST_FILES@@": " ".join(test_filepaths),
         "@@ELM_HOME_ZIP@@": "",
         "@@VERBOSE@@": "",
+        "@@NODE_PATH@@": nodeinfo.target_tool_path,
     }
 
     if ctx.attr.vvv:
