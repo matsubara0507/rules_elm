@@ -6,8 +6,8 @@ def _elm_test_wrapper_impl(ctx):
     nodeinfo = ctx.toolchains["@rules_nodejs//nodejs:toolchain_type"].nodeinfo
 
     inputs = [
-        ctx.toolchains["@rules_elm//elm:toolchain"].elm,
-        ctx.toolchains["@rules_elm//elm:toolchain"].elm_test,
+        elm_compiler,
+        elm_test_bin,
         ctx.file.elm_json,
     ] + ctx.files.srcs + ctx.files.tests + nodeinfo.tool_files
 
