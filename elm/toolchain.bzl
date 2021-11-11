@@ -41,8 +41,6 @@ def _elm_compiler_impl(ctx):
         sha256 = ctx.attr.checksum,
         output = file_name + ".gz",
     )
-    ctx.execute([ctx.which("gzip"), "-d", file_name + ".gz"])
-    ctx.execute([ctx.which("chmod"), "+x", file_name])
 
     test_version = ctx.attr.test_version
     if not ELM_TEST_BINDIST.get(test_version):
@@ -67,8 +65,9 @@ def _elm_compiler_impl(ctx):
         "BUILD",
         executable = False,
         content = """
-load("@rules_elm//elm:toolchain.bzl", "elm_toolchain")
-exports_files(["{elm}", "{elm_test}"])
+load("@rules_elm//elm:toolchain.bzl", "elm_toolchain", "extract_gzip")
+exports_files(["{elm}.gz", "{elm_test}"])
+extract_gzip(name = "{elm}", archive = "{elm}.gz")
 elm_toolchain(name = "{os}_info", elm = ":{elm}", elm_test = ":{elm_test}")
         """.format(os = os, elm = file_name, elm_test = elm_test_name),
     )
@@ -149,4 +148,33 @@ elm_toolchain = rule(
             mandatory = True,
         ),
     },
+)
+
+def _extract_gzip_imp(ctx):
+    archive = ctx.file.archive
+    elm_compiler = ctx.actions.declare_file(ctx.label.name, sibling = archive)
+
+    ctx.actions.run_shell(
+        inputs = [ctx.file.archive],
+        outputs = [elm_compiler],
+        command ="""
+        gunzip "{archive}" -c > "{output}"
+        chmod +x "{output}"
+        """.format(
+            archive = ctx.file.archive.path,
+            output = elm_compiler.path,
+        ),
+    )
+
+    return [DefaultInfo(executable = elm_compiler)]
+
+extract_gzip = rule(
+    implementation = _extract_gzip_imp,
+    attrs = {
+        "archive": attr.label(
+            mandatory = True,
+            allow_single_file = True,
+        ),
+    },
+    provides = [DefaultInfo],
 )
