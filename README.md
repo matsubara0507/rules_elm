@@ -51,7 +51,7 @@ nodejs_register_toolchains(
 
 ### Example
 
-Please see [eamples/build-project](/eamples/build-project)
+Please see [examples/build-project](/examples/build-project)
 
 ```py
 load("@rules_elm//elm:def.bzl", "elm_make", "elm_dependencies")
