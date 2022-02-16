@@ -14,10 +14,19 @@ jobs:
           - ubuntu-18.04
           - macos-10.15
           - windows-2019
+        bazel-version:
+          - 5.0.0
+          - 4.2.2
       fail-fast: false
+      max-parallel: 2
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+
+    - name: Overwrite .bazelversion
+      run: |
+        echo ${{ matrix.bazel-version }} > .bazelversion
+        bazelisk --version
 
     - name: run bazel example (display elm version)
       run: |

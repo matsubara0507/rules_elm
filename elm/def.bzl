@@ -49,7 +49,7 @@ elm_make = rule(
         ),
         "_elm_wrapper": attr.label(
             executable = True,
-            cfg = "host",
+            cfg = "exec",
             default = Label("@rules_elm//elm/private:elm_wrapper"),
         ),
     },
@@ -81,7 +81,7 @@ elm_dependencies = rule(
         ),
         "_elm_wrapper": attr.label(
             executable = True,
-            cfg = "host",
+            cfg = "exec",
             default = Label("@rules_elm//elm/private:elm_dependencies"),
         ),
     },

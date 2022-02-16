@@ -142,6 +142,7 @@ elm_toolchain = rule(
         "elm": attr.label(
             allow_single_file = True,
             mandatory = True,
+            cfg = "exec",
         ),
         "elm_test": attr.label(
             allow_single_file = True,
