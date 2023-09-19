@@ -17,7 +17,6 @@ jobs:
         bazel-version:
           - 6.3.2
           - 5.4.1
-          - 4.2.4
       fail-fast: false
       max-parallel: 2
     steps:
