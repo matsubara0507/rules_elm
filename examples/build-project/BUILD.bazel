@@ -34,7 +34,7 @@ elm_make(
 
 elm_test(
     name = "sample-test",
-    tests = glob(["test/**"]),
+    tests = glob(["tests/**"]),
     srcs = glob(["src/**"]),
     elm_json = "elm.json",
     elm_home = ":deps",

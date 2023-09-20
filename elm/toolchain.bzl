@@ -4,7 +4,7 @@ DEFAULT_VERSION = "0.19.1"
 
 DEFAULT_TEST_VERSION = \
     {
-        "0.19.1": "1.2.1",
+        "0.19.1": "3.0",
     }
 
 ELM_COMPILER_BINDIST = \
@@ -27,7 +27,17 @@ ELM_TEST_BINDIST = \
             "linux": "6e5759f832a5e025898c9306ba47b2f9ed7f0c371dc69bd16c15c7ed8bfb1501",
             "mac": "890c45a7eda24fd13169d349af9c835ee3ed04974eec36953baba5aefc3628a8",
             "windows": "26add13880af484a47cd182547f41370d3bfca812a7cc9e3db6f41ce13b7fc40",
-        }
+        },
+        "2.0.2": {
+            "linux": "ede814df1dec5781e00dccba56ad38d901af2c8be55a33bd31e0fbcf2b5ee771",
+            "mac": "d24d73edea77d607c488d8aecf083e09b6e3873d71b109269ab38b35dfd60236",
+            "windows": "5baa282339b8e36e7a0b2ff87733fd2f01dd8b31dedaa12332ad24f706a91ba4",
+        },
+        "3.0": {
+            "linux": "c72702d32a2a9e051667febeeef486a1794798d0770be1a9da95895e10b6db0f",
+            "mac": "41e2be1d77fb587ac1336f4b8822feb3b914eff7364715f6cac0bc4a90c0948a",
+            "windows": "8cb1ef9bfe3e80e12db7db7f176e3e9280c5ae3bbb54c8dcfbb4f298c3d8fc71",
+        },
     }
 
 def _elm_compiler_impl(ctx):
