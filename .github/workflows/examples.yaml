@@ -12,7 +12,8 @@ jobs:
       matrix:
         operating-system:
           - ubuntu-22.04
-          - macos-12
+          - macos-13 # intel
+          - macos-14 # apple silicon
           - windows-2022
         bazel-version:
           - 6.3.2
