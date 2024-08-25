@@ -193,21 +193,21 @@ elm_toolchain = rule(
 
 def _extract_gzip_imp(ctx):
     archive = ctx.file.archive
-    elm_compiler = ctx.actions.declare_file(ctx.label.name, sibling = archive)
+    output = ctx.actions.declare_file(ctx.label.name, sibling = archive)
 
     ctx.actions.run_shell(
         inputs = [ctx.file.archive],
-        outputs = [elm_compiler],
+        outputs = [output],
         command ="""
         gunzip "{archive}" -c > "{output}"
         chmod +x "{output}"
         """.format(
             archive = ctx.file.archive.path,
-            output = elm_compiler.path,
+            output = output.path,
         ),
     )
 
-    return [DefaultInfo(executable = elm_compiler)]
+    return [DefaultInfo(executable = output)]
 
 extract_gzip = rule(
     implementation = _extract_gzip_imp,
