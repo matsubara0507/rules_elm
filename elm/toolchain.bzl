@@ -67,7 +67,6 @@ def _elm_compiler_impl(ctx):
 
     elm_test_name = "elm-test-rs"
     test_checksum = ELM_TEST_BINDIST.get(test_version).get(os)
-    test_file_name = "elm-test-{}".format(os)
     test_suffix = os
     if os == "mac":
         test_suffix = "macos"
