@@ -1,16 +1,7 @@
 workspace(name = "rules_elm")
 
-load("@rules_elm//elm:repositories.bzl", rules_elm_repositories = "repositories")
-
-rules_elm_repositories()
-
-load("@rules_elm//elm:toolchain.bzl", rules_elm_toolchains = "toolchains")
-
-rules_elm_toolchains(version = "0.19.1")
-
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-# for rules_nodejs
 http_archive(
     name = "bazel_skylib",
     sha256 = "66ffd9315665bfaafc96b52278f57c7e2dd09f5ede279ea6d39b2be471e7e3aa",
@@ -23,6 +14,14 @@ http_archive(
 load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
 
 bazel_skylib_workspace()
+
+load("@rules_elm//elm:repositories.bzl", rules_elm_repositories = "repositories")
+
+rules_elm_repositories()
+
+load("@rules_elm//elm:toolchain.bzl", rules_elm_toolchains = "toolchains")
+
+rules_elm_toolchains(version = "0.19.1")
 
 # for elm-test
 http_archive(
