@@ -16,7 +16,8 @@ jobs:
           - macos-14 # apple silicon
           - windows-2022
         bazel-version:
-          - 6.3.2
+          - 7.3.1
+          - 6.5.0
           - 5.4.1
       fail-fast: false
       max-parallel: 2

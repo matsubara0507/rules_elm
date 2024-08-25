@@ -1,4 +1,5 @@
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive", "http_file")
+load("@bazel_skylib//lib:versions.bzl", "versions")
 
 DEFAULT_VERSION = "0.19.1"
 
@@ -76,21 +77,40 @@ def _elm_compiler_impl(ctx):
     if os == "windows":
         test_extention = "zip"
         elm_test_name = "elm-test-rs.exe"
-    ctx.download_and_extract(
-        url = "https://github.com/mpizenberg/elm-test-rs/releases/download/v{}/elm-test-rs_{}.{}".format(test_version, test_suffix, test_extention),
-        sha256 = test_checksum,
-    )
 
-    ctx.file(
-        "BUILD",
-        executable = False,
-        content = """
+    if os == "mac-arm" and not versions.is_at_least("7.2.0", versions.get()):
+        # https://github.com/bazelbuild/bazel/issues/20269
+        ctx.download(
+            url = "https://github.com/mpizenberg/elm-test-rs/releases/download/v{}/elm-test-rs_{}.{}".format(test_version, test_suffix, test_extention),
+            sha256 = test_checksum,
+            output = elm_test_name + ".tar.gz",
+        )
+        ctx.file(
+            "BUILD",
+            executable = False,
+            content = """
+load("@rules_elm//elm:toolchain.bzl", "elm_toolchain", "extract_gzip", "extract_targz")
+exports_files(["{elm}.gz", "{elm_test}.tar.gz"])
+extract_gzip(name = "{elm}", archive = "{elm}.gz")
+extract_targz(name = "{elm_test}", archive = "{elm_test}.tar.gz")
+elm_toolchain(name = "{os}_info", elm = ":{elm}", elm_test = ":{elm_test}")
+            """.format(os = os, elm = file_name, elm_test = elm_test_name),
+        )
+    else:
+        ctx.download_and_extract(
+            url = "https://github.com/mpizenberg/elm-test-rs/releases/download/v{}/elm-test-rs_{}.{}".format(test_version, test_suffix, test_extention),
+            sha256 = test_checksum,
+        )
+        ctx.file(
+            "BUILD",
+            executable = False,
+            content = """
 load("@rules_elm//elm:toolchain.bzl", "elm_toolchain", "extract_gzip")
 exports_files(["{elm}.gz", "{elm_test}"])
 extract_gzip(name = "{elm}", archive = "{elm}.gz")
 elm_toolchain(name = "{os}_info", elm = ":{elm}", elm_test = ":{elm_test}")
-        """.format(os = os, elm = file_name, elm_test = elm_test_name),
-    )
+            """.format(os = os, elm = file_name, elm_test = elm_test_name),
+        )
 
 
 _elm_compiler = repository_rule(
@@ -192,6 +212,36 @@ def _extract_gzip_imp(ctx):
 
 extract_gzip = rule(
     implementation = _extract_gzip_imp,
+    attrs = {
+        "archive": attr.label(
+            mandatory = True,
+            allow_single_file = True,
+        ),
+    },
+    provides = [DefaultInfo],
+)
+
+def _extract_targz_imp(ctx):
+    archive = ctx.file.archive
+    output = ctx.actions.declare_file(ctx.label.name, sibling = archive)
+
+    ctx.actions.run_shell(
+        inputs = [ctx.file.archive],
+        outputs = [output],
+        command ="""
+        tar -zxf "{archive}" -C "{output_dir}"
+        chmod +x "{output}"
+        """.format(
+            archive = ctx.file.archive.path,
+            output_dir = output.dirname,
+            output = output.path,
+        ),
+    )
+
+    return [DefaultInfo(executable = output)]
+
+extract_targz = rule(
+    implementation = _extract_targz_imp,
     attrs = {
         "archive": attr.label(
             mandatory = True,
