@@ -35,8 +35,9 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 http_archive(
     name = "rules_nodejs",
-    sha256 = "995eb2fbcd6c0d27faea1f8b362a3a448d98d42b6c0fddc2943b72fe866a9d8e",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/4.4.4/rules_nodejs-core-4.4.4.tar.gz"],
+    sha256 = "5ad078287b5f3069735652e1fc933cb2e2189b15d2c9fc826c889dc466c32a07",
+    strip_prefix = "rules_nodejs-6.0.1",
+    url = "https://github.com/bazelbuild/rules_nodejs/releases/download/v6.0.1/rules_nodejs-v6.0.1.tar.gz",
 )
 
 load("@rules_nodejs//nodejs:repositories.bzl", "rules_nodejs_dependencies", "nodejs_register_toolchains")
@@ -44,8 +45,8 @@ load("@rules_nodejs//nodejs:repositories.bzl", "rules_nodejs_dependencies", "nod
 rules_nodejs_dependencies()
 
 nodejs_register_toolchains(
-    name = "node16",
-    node_version = "16.13.0",
+    name = "node18",
+    node_version = "18.17.1",
 )
 ```
 
@@ -88,3 +89,5 @@ elm_test(
 ### elm-test-rs
 
 - 1.2.1
+- 2.0.2
+- 3.0
