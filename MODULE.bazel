@@ -1,0 +1,54 @@
+module(
+    name = "rules_elm",
+    version = "2.0.0",
+)
+
+bazel_dep(
+    name = "bazel_skylib",
+    version = "1.6.1",
+)
+
+bazel_dep(
+    name = "platforms",
+    version = "0.0.10"
+)
+
+bazel_dep(
+    name = "rules_python",
+    version = "0.36.0",
+)
+
+
+elm = use_extension("@rules_elm//elm:extensions.bzl", "elm")
+elm.toolchain(version = "0.19.1")
+use_repo(elm, "elm_toolchains")
+
+register_toolchains("@elm_toolchains//:linux_amd64_toolchain")
+register_toolchains("@elm_toolchains//:darwin_amd64_toolchain")
+register_toolchains("@elm_toolchains//:darwin_arm64_toolchain")
+register_toolchains("@elm_toolchains//:windows_amd64_toolchain")
+
+bazel_dep(
+    name = "rules_nodejs",
+    version = "6.0.1",
+)
+
+node = use_extension("@rules_nodejs//nodejs:extensions.bzl", "node")
+node.toolchain(node_version = "18.17.1")
+use_repo(node, "nodejs_toolchains")
+
+register_toolchains("@nodejs_toolchains//:linux_amd64_toolchain_target")
+
+register_toolchains("@nodejs_toolchains//:linux_amd64_toolchain")
+
+register_toolchains("@nodejs_toolchains//:darwin_amd64_toolchain_target")
+
+register_toolchains("@nodejs_toolchains//:darwin_amd64_toolchain")
+
+register_toolchains("@nodejs_toolchains//:darwin_arm64_toolchain_target")
+
+register_toolchains("@nodejs_toolchains//:darwin_arm64_toolchain")
+
+register_toolchains("@nodejs_toolchains//:windows_amd64_toolchain_target")
+
+register_toolchains("@nodejs_toolchains//:windows_amd64_toolchain")

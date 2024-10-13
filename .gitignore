@@ -8,3 +8,5 @@ bazel-bin
 bazel-out
 bazel-rules_elm
 bazel-testlogs
+
+MODULE.bazel.lock
