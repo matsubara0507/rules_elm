@@ -1,4 +1,4 @@
-name: Example
+name: Example with bzlmod
 on:
   pull_request: null
   push:
@@ -6,7 +6,7 @@ on:
     - main
 jobs:
   run:
-    name: Run Example
+    name: Run Example with bzlmod
     runs-on: ${{ matrix.operating-system }}
     strategy:
       matrix:
@@ -24,8 +24,8 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Remove bzlmod config
-      run: rm MODULE.bazel
+    - name: Remove workspace config
+      run: rm WORKSPACE
 
     - name: Overwrite .bazelversion
       run: |
@@ -37,12 +37,12 @@ jobs:
 
     - name: run bazel example (display elm version)
       run: |
-        bazelisk build //examples/display-version:elm
+        bazelisk build --enable_bzlmod //examples/display-version:elm
         cat bazel-bin/examples/display-version/elm.version
 
     - name: run bazel example (build project)
       run: |
-        bazelisk build //examples/build-project:index-without-deps
-        bazelisk build //examples/build-project:index
-        bazelisk build //examples/build-project:index-optimize
-        bazelisk test --test_output=all //examples/build-project:sample-test
+        bazelisk build --enable_bzlmod //examples/build-project:index-without-deps
+        bazelisk build --enable_bzlmod //examples/build-project:index
+        bazelisk build --enable_bzlmod //examples/build-project:index-optimize
+        bazelisk test --enable_bzlmod --test_output=all //examples/build-project:sample-test
