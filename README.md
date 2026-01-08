@@ -50,6 +50,39 @@ nodejs_register_toolchains(
 )
 ```
 
+`MODULE.bazel`
+
+```py
+bazel_dep(name = "rules_elm", version = "x.y.z")
+
+elm = use_extension("@rules_elm//elm:extensions.bzl", "toolchains")
+elm.toolchains(
+    version = "0.19.1",
+    test_version = "3.0",
+)
+
+use_repo(
+    elm,
+    "rules_elm_compiler_linux",
+    "rules_elm_compiler_mac",
+    "rules_elm_compiler_mac-arm",
+    "rules_elm_compiler_windows",
+    "rules_elm_compiler_linux-toolchain",
+    "rules_elm_compiler_mac-toolchain",
+    "rules_elm_compiler_mac-arm-toolchain",
+    "rules_elm_compiler_windows-toolchain",
+)
+
+register_toolchains(
+    "@rules_elm_compiler_linux-toolchain//:toolchain",
+    "@rules_elm_compiler_mac-toolchain//:toolchain",
+    "@rules_elm_compiler_mac-arm-toolchain//:toolchain",
+    "@rules_elm_compiler_windows-toolchain//:toolchain",
+)
+```
+
+If you use `elm_test`, you also need to register Node.js toolchains (and Python toolchains if your workspace requires it).
+
 ### Example
 
 Please see [examples/build-project](/examples/build-project)

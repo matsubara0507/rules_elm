@@ -156,6 +156,11 @@ _elm_compiler_toolchain = repository_rule(
     },
 )
 
+elm_compiler_repo = _elm_compiler
+elm_compiler_toolchain_repo = _elm_compiler_toolchain
+
+# This macro is for WORKSPACE users. bzlmod users should use the module
+# extension in //elm:extensions.bzl to register toolchains instead.
 def toolchains(version = DEFAULT_VERSION, test_version = ""):
     if not ELM_COMPILER_BINDIST.get(version):
         fail("Binary distribution of Elm {} is not available.".format(version))
