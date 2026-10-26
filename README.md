@@ -10,6 +10,8 @@ This repository is bazel rules to build [Elm](https://elm-lang.org/) project.
 - elm_dependencies : cache dependencies for elm_make rule
 - elm_test : run [`elm-test-rs`](https://github.com/mpizenberg/elm-test-rs)
 
+Tested with Bazel 7, 8 and 9. `WORKSPACE` is tested only with Bazel 7, since it is disabled by default in Bazel 8 and removed in Bazel 9.
+
 ## Usage
 
 `WORKSPACE`

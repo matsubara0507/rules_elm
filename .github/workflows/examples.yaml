@@ -6,38 +6,74 @@ on:
     - main
 jobs:
   run:
-    name: Run Example
+    name: Run Example (${{ matrix.operating-system }}, Bazel ${{ matrix.bazel-version }}, ${{ matrix.mode }}, Elm ${{ matrix.elm-version }})
     runs-on: ${{ matrix.operating-system }}
     strategy:
       matrix:
         operating-system:
-          - ubuntu-22.04
-          - macos-13 # intel
-          - macos-14 # apple silicon
-          - windows-2022
+          - ubuntu-24.04
+          - macos-15
+          - windows-2025
         bazel-version:
-          - 7.3.1
-          - 6.5.0
-          - 5.4.1
+          - 9.3.1
+          - 8.8.2
+          - 7.7.1
+        mode:
+          - bzlmod
+        elm-version:
+          - 0.19.1
+        include:
+          # WORKSPACE is disabled by default since Bazel 8 and removed in Bazel 9, so test it only with Bazel 7.
+          - operating-system: ubuntu-24.04
+            bazel-version: 7.7.1
+            mode: workspace
+            elm-version: 0.19.1
+          - operating-system: macos-15
+            bazel-version: 7.7.1
+            mode: workspace
+            elm-version: 0.19.1
+          - operating-system: windows-2025
+            bazel-version: 7.7.1
+            mode: workspace
+            elm-version: 0.19.1
       fail-fast: false
-      max-parallel: 2
+      max-parallel: 4
+    defaults:
+      run:
+        shell: bash
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
 
     - name: Overwrite .bazelversion
       run: |
         echo ${{ matrix.bazel-version }} > .bazelversion
         bazelisk --version
 
+    - name: Select bzlmod or WORKSPACE
+      run: |
+        case "${{ matrix.mode }}/${{ matrix.bazel-version }}" in
+          workspace/*) flags="--noenable_bzlmod --enable_workspace" ;;
+          bzlmod/7.*) flags="--enable_workspace=false" ;;
+          *) flags="" ;;
+        esac
+        echo "BAZEL_FLAGS=${flags}" >> "$GITHUB_ENV"
+
+    - name: Overwrite Elm version
+      run: |
+        perl -pi -e 's/elm\.toolchains\(version = "[^"]+"\)/elm.toolchains(version = "${{ matrix.elm-version }}")/' MODULE.bazel
+        perl -pi -e 's/rules_elm_toolchains\(version = "[^"]+"\)/rules_elm_toolchains(version = "${{ matrix.elm-version }}")/' WORKSPACE
+        perl -pi -e 's/"elm-version": "[^"]+"/"elm-version": "${{ matrix.elm-version }}"/' examples/build-project/elm.json
+
     - name: run bazel example (display elm version)
       run: |
-        bazelisk build //examples/display-version:elm
+        bazelisk build $BAZEL_FLAGS //examples/display-version:elm
         cat bazel-bin/examples/display-version/elm.version
+        tr -d "\r" < bazel-bin/examples/display-version/elm.version | grep -qx "${{ matrix.elm-version }}"
 
     - name: run bazel example (build project)
       run: |
-        bazelisk build //examples/build-project:index-without-deps
-        bazelisk build //examples/build-project:index
-        bazelisk build //examples/build-project:index-optimize
-        bazelisk test --test_output=all //examples/build-project:sample-test
+        bazelisk build $BAZEL_FLAGS //examples/build-project:index-without-deps
+        bazelisk build $BAZEL_FLAGS //examples/build-project:index
+        bazelisk build $BAZEL_FLAGS //examples/build-project:index-optimize
+        bazelisk test $BAZEL_FLAGS --test_output=all //examples/build-project:sample-test
