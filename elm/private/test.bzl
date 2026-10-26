@@ -1,5 +1,14 @@
 load("@rules_python//python:defs.bzl", "py_test")
 
+def _node_path(nodeinfo):
+    # target_tool_path is "external/<repo>/...", which no longer exists in runfiles since Bazel 8.
+    # Use the runfiles path of the node binary, or node_path for a non-hermetic Node.js.
+    if getattr(nodeinfo, "node", None):
+        return nodeinfo.node.short_path
+    if getattr(nodeinfo, "node_path", None):
+        return nodeinfo.node_path
+    return nodeinfo.target_tool_path
+
 def _elm_test_wrapper_impl(ctx):
     elm_compiler = ctx.toolchains["@rules_elm//elm:toolchain"].elm
     elm_test_bin = ctx.toolchains["@rules_elm//elm:toolchain"].elm_test
@@ -23,7 +32,7 @@ def _elm_test_wrapper_impl(ctx):
         "@@TEST_FILES@@": " ".join(test_filepaths),
         "@@ELM_HOME_ZIP@@": "",
         "@@VERBOSE@@": "",
-        "@@NODE_PATH@@": nodeinfo.target_tool_path,
+        "@@NODE_PATH@@": _node_path(nodeinfo),
     }
 
     if ctx.attr.vvv:

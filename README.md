@@ -10,6 +10,8 @@ This repository is bazel rules to build [Elm](https://elm-lang.org/) project.
 - elm_dependencies : cache dependencies for elm_make rule
 - elm_test : run [`elm-test-rs`](https://github.com/mpizenberg/elm-test-rs)
 
+Tested with Bazel 7, 8 and 9. `WORKSPACE` is tested only with Bazel 7, since it is disabled by default in Bazel 8 and removed in Bazel 9.
+
 ## Usage
 
 `WORKSPACE`
@@ -33,11 +35,39 @@ rules_elm_toolchains(version = "0.19.1")
 # for elm-test
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
+# rules_nodejs requires bazel_lib
+http_archive(
+    name = "bazel_lib",
+    sha256 = "6fd3b1e1a38ca744f9664be4627ced80895c7d2ee353891c172f1ab61309c933",
+    strip_prefix = "bazel-lib-3.0.0",
+    url = "https://github.com/bazel-contrib/bazel-lib/releases/download/v3.0.0/bazel-lib-v3.0.0.tar.gz",
+)
+
+load("@bazel_lib//lib:repositories.bzl", "bazel_lib_dependencies", "bazel_lib_register_toolchains")
+
+bazel_lib_dependencies()
+
+load("@rules_shell//shell:repositories.bzl", "rules_shell_dependencies", "rules_shell_toolchains")
+
+rules_shell_dependencies()
+
+rules_shell_toolchains()
+
+bazel_lib_register_toolchains()
+
+load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
+load("@platforms//host:extension.bzl", "host_platform_repo")
+
+maybe(
+    host_platform_repo,
+    name = "host_platform",
+)
+
 http_archive(
     name = "rules_nodejs",
-    sha256 = "5ad078287b5f3069735652e1fc933cb2e2189b15d2c9fc826c889dc466c32a07",
-    strip_prefix = "rules_nodejs-6.0.1",
-    url = "https://github.com/bazelbuild/rules_nodejs/releases/download/v6.0.1/rules_nodejs-v6.0.1.tar.gz",
+    sha256 = "f87453e0d6a97b4d2e6d22070a447b6d304727bf61ff8e31ce25ded0319005dd",
+    strip_prefix = "rules_nodejs-6.7.7",
+    url = "https://github.com/bazel-contrib/rules_nodejs/releases/download/v6.7.7/rules_nodejs-v6.7.7.tar.gz",
 )
 
 load("@rules_nodejs//nodejs:repositories.bzl", "rules_nodejs_dependencies", "nodejs_register_toolchains")
@@ -45,8 +75,8 @@ load("@rules_nodejs//nodejs:repositories.bzl", "rules_nodejs_dependencies", "nod
 rules_nodejs_dependencies()
 
 nodejs_register_toolchains(
-    name = "node18",
-    node_version = "18.17.1",
+    name = "node24",
+    node_version = "24.22.1",
 )
 ```
 
