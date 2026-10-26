@@ -9,7 +9,7 @@ bazel_dep(
 
 bazel_dep(
     name = "bazel_skylib",
-    version = "1.7.1",
+    version = "1.8.1",
 )
 
 bazel_dep(
@@ -19,5 +19,24 @@ bazel_dep(
 
 bazel_dep(
     name = "rules_nodejs",
-    version = "6.0.1",
+    version = "6.7.7",
+)
+
+# Toolchains for the examples and CI. As a dev dependency, this does not affect modules that depend on rules_elm.
+elm = use_extension("//elm:extensions.bzl", "toolchains", dev_dependency = True)
+elm.toolchains(version = "0.19.1")
+use_repo(
+    elm,
+    "rules_elm_compiler_linux-toolchain",
+    "rules_elm_compiler_mac-arm-toolchain",
+    "rules_elm_compiler_mac-toolchain",
+    "rules_elm_compiler_windows-toolchain",
+)
+
+register_toolchains(
+    "@rules_elm_compiler_linux-toolchain//:toolchain",
+    "@rules_elm_compiler_mac-toolchain//:toolchain",
+    "@rules_elm_compiler_mac-arm-toolchain//:toolchain",
+    "@rules_elm_compiler_windows-toolchain//:toolchain",
+    dev_dependency = True,
 )
