@@ -22,6 +22,7 @@ jobs:
           - bzlmod
         elm-version:
           - 0.19.1
+          - 0.19.3
         include:
           # WORKSPACE is disabled by default since Bazel 8 and removed in Bazel 9, so test it only with Bazel 7.
           - operating-system: ubuntu-24.04
