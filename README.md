@@ -146,6 +146,8 @@ elm_test(
 
 ## Support version
 
+- 0.19.3
+- 0.19.2
 - 0.19.1
 - 0.19.0
 
@@ -154,3 +156,6 @@ elm_test(
 - 1.2.1
 - 2.0.2
 - 3.0
+- 3.2.0
+
+If `test_version` is not specified, elm-test-rs 3.2.0 is used for Elm 0.19.2 and later, and 3.0 is used for Elm 0.19.1.

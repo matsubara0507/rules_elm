@@ -5,11 +5,25 @@ DEFAULT_VERSION = "0.19.1"
 
 DEFAULT_TEST_VERSION = \
     {
+        "0.19.3": "3.2.0",
+        "0.19.2": "3.2.0",
         "0.19.1": "3.0",
     }
 
 ELM_COMPILER_BINDIST = \
     {
+        "0.19.3": {
+            "linux": "d11702b31577ed8b720b9d81c52c8a19a52b72b1fcfadef0fcad92f21798c58a",
+            "mac": "4a9c5578e53c4feb55b91c8ee9a0f46da9913414c6303d1c55add0d3abcd9921",
+            "mac-arm": "a426e47d14cba0588aa81475adc32ba24bbf045209d0c560d0a89a5c4f3c34d0",
+            "windows": "02d827be1d8489dbe53aaf5f923cb1f580aed257a9a8b642ff04bbe625572507",
+        },
+        "0.19.2": {
+            "linux": "66320d27701654fa11bd0e8d84bdf9829694d5770c8dcee2dede6160fad58737",
+            "mac": "bcfbec1ee85bf87e29da23ea6cb597caa4613b74df77b4a3a40d881df1fa0410",
+            "mac-arm": "8b02a7fac1643b39acb87ae2a8e10f0f1534fe61940ca08ab17dfc2ac98115c8",
+            "windows": "47830fe67a8cca55ce82da4e04c29d150f5725b92b0a354b83121d6903ff667a",
+        },
         "0.19.1": {
             "linux": "e44af52bb27f725a973478e589d990a6428e115fe1bb14f03833134d6c0f155c",
             "mac": "05289f0e3d4f30033487c05e689964c3bb17c0c48012510dbef1df43868545d1",
@@ -43,20 +57,42 @@ ELM_TEST_BINDIST = \
             "mac-arm": "8701bf104b315446d64ae4d1689aa6a3bad1a85e1b31a9c9907ac911837b5fd1",
             "windows": "8cb1ef9bfe3e80e12db7db7f176e3e9280c5ae3bbb54c8dcfbb4f298c3d8fc71",
         },
+        "3.2.0": {
+            "linux": "60257038d90b43fbc322dd89aa0afeb60724140809661b9f080e7dd5f06523d3",
+            "mac": "1a8c2af9567d54ef71d1b8eb93a2aacd5f405d2b130b8cb4464216bed13fcea0",
+            "mac-arm": "1f5283105b89c48e89165e432993a7868f69ca3b2f8029f2fb1f0b44293004a9",
+            "windows": "66f8736ced77e96340f5042d7a02ab0682a94c4fa498334332be9642edb99a2e",
+        },
     }
+
+def _elm_compiler_url(version, os):
+    # Since 0.19.2, binaries are published as elm-{version}-{platform}.gz.
+    if versions.is_at_least("0.19.2", version):
+        platform = {
+            "linux": "linux-x64",
+            "mac": "mac-x64",
+            "mac-arm": "mac-arm",
+            "windows": "windows-x64",
+        }.get(os)
+        return "https://github.com/elm/compiler/releases/download/{version}/elm-{version}-{platform}.gz".format(
+            version = version,
+            platform = platform,
+        )
+
+    os_name = "{}-64-bit".format(os)
+    if os == "mac-arm":
+        os_name = "mac-64-bit-ARM"
+    return "https://github.com/elm/compiler/releases/download/{}/binary-for-{}.gz".format(version, os_name)
 
 def _elm_compiler_impl(ctx):
     os = ctx.attr.os
-    os_name = "{}-64-bit".format(os)
     version = ctx.attr.version
     file_name = "elm"
     suffix = ""
     if os == "windows":
         file_name += ".exe"
-    if os == "mac-arm":
-        os_name = "mac-64-bit-ARM"
     ctx.download(
-        url = "https://github.com/elm/compiler/releases/download/{}/binary-for-{}.gz".format(version, os_name),
+        url = _elm_compiler_url(version, os),
         sha256 = ctx.attr.checksum,
         output = file_name + ".gz",
     )
@@ -73,9 +109,13 @@ def _elm_compiler_impl(ctx):
     if os == "mac-arm":
         test_suffix = "macos-arm"
     test_extention = "tar.gz"
+    test_archive_type = ""
     if os == "windows":
         test_extention = "zip"
         elm_test_name = "elm-test-rs.exe"
+        # Since elm-test-rs 3.0.1, elm-test-rs_windows.zip is actually a tar.gz archive.
+        if versions.is_at_least("3.0.1", test_version):
+            test_archive_type = "tar.gz"
 
     if os == "mac-arm" and not versions.is_at_least("7.2.0", versions.get()):
         # https://github.com/bazelbuild/bazel/issues/20269
@@ -99,6 +139,7 @@ elm_toolchain(name = "{os}_info", elm = ":{elm}", elm_test = ":{elm_test}")
         ctx.download_and_extract(
             url = "https://github.com/mpizenberg/elm-test-rs/releases/download/v{}/elm-test-rs_{}.{}".format(test_version, test_suffix, test_extention),
             sha256 = test_checksum,
+            type = test_archive_type,
         )
         ctx.file(
             "BUILD",
