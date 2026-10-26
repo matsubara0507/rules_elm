@@ -40,6 +40,6 @@ if "@@VERBOSE@@" != "":
     args.append("-vvv")
 
 path_env = os.environ["PATH"]
-os.environ["PATH"] = os.path.dirname(os.path.abspath("@@NODE_PATH@@")) + ":" + path_env
+os.environ["PATH"] = os.path.dirname(os.path.abspath("@@NODE_PATH@@")) + os.pathsep + path_env
 
 run("{cmd} {args}".format(cmd = elm_test_path, args = " ".join(args + test_filepaths)))
