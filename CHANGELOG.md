@@ -6,6 +6,7 @@
 - Feat: support Mac ARM binary [#13](https://github.com/matsubara0507/rules_elm/pull/13)
 - CI: test with Bazel 7, 8 and 9 (WORKSPACE only with Bazel 7), and require rules_nodejs 6.7.7 for Bazel 9
 - Docs: use Node.js 24 (rules_nodejs 6.7.7 with bazel_lib) in the WORKSPACE example
+- Feat: support Elm 0.19.2 and 0.19.3, and elm-test-rs 3.2.0
 
 ## v1.0.0
 
